@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-сынып Информатика Тесті</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --success: #2ECC71;
+            --danger: #E74C3C;
+            --bg: #F4F7F6;
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 650px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid #EEF2F5;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2C3E50;
+            font-size: 24px;
+            margin: 0 0 10px 0;
+        }
+
+        .variant-select {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .variant-btn {
+            background-color: #E8ECEF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.2s;
+        }
+
+        .variant-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #E0E0E0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .option-item {
+            background-color: #F8FAFC;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary);
+            background-color: #F0F7FF;
+        }
+
+        .option-item.correct {
+            background-color: #E8F8F0;
+            border-color: var(--success);
+            color: #1E8449;
+            font-weight: bold;
+        }
+
+        .option-item.incorrect {
+            background-color: #FADBD8;
+            border-color: var(--danger);
+            color: #922B21;
+        }
+
+        .feedback-box {
+            display: none;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-next {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .result-emoji {
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+
+        .score-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 15px;
+        }
+
+        .restart-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🖥️ 5-сынып Информатика Тесті</h1>
+        <div class="variant-select" id="variantButtons">
+            <button class="variant-btn active" onclick="selectVariant(0)">1-нұсқа</button>
+            <button class="variant-btn" onclick="selectVariant(1)">2-нұсқа</button>
+            <button class="variant-btn" onclick="selectVariant(2)">3-нұсқа</button>
+            <button class="variant-btn" onclick="selectVariant(3)">4-нұсқа</button>
+            <button class="variant-btn" onclick="selectVariant(4)">5-нұсқа</button>
+        </div>
+    </header>
+
+    <div id="quizBox">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="question-title" id="questionText">Сұрақ жүктелуде...</div>
+        <ul class="options-list" id="optionsList"></ul>
+        <div class="feedback-box" id="feedbackBox"></div>
+        <button class="btn-next" id="nextBtn" onclick="nextQuestion()">Келесі сұрақ ➡️</button>
+    </div>
+
+    <div class="result-screen" id="resultBox">
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+        <h2>Тест аяқталды!</h2>
+        <div class="score-text" id="scoreText">10-нан 8 дұрыс (80%)</div>
+        <p id="resultComment" style="color: #666; font-size: 16px; margin-bottom: 20px;"></p>
+        <button class="restart-btn" onclick="restartQuiz()">Қайта тапсыру 🔄</button>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    // 1-НҰСҚА: Ақпарат және ақпараттық процестер
+    [
+        { q: "1. Адам ақпаратты қай мүшесі арқылы ең көп қабылдайды?", options: ["Көз", "Құлақ", "Тіл", "Мұрын"], answer: 0 },
+        { q: "2. Дыбыстық ақпаратты қалай қабылдаймыз?", options: ["Есту арқылы", "Көру арқылы", "Дәм сезу арқылы", "Иіс сезу арқылы"], answer: 0 },
+        { q: "3. Ақпаратты сақтауға қай іс-әрекет жатады?", options: ["Дәптерге жазу", "Ән тыңдау", "Есеп шығару", "Теледидар қарау"], answer: 0 },
+        { q: "4. Ақпаратты өңдеуге қайсысы жатады?", options: ["Математикалық есепті шығару", "Кітапты сөреге қою", "Суретті қарау", "Мәтінді дауыстап оқу"], answer: 0 },
+        { q: "5. Ақпаратты жеткізуші құралға не жатады?", options: ["Теледидар", "Тас", "Шыны", "Үстел"], answer: 0 },
+        { q: "6. Мәтіндік ақпаратқа не жатады?", options: ["Кітаптағы сөздер", "Музыкалық әуен", "Фотосурет", "Бейнебаян"], answer: 0 },
+        { q: "7. Графикалық ақпаратты тап:", options: ["Суреттер мен сызбалар", "Әуен", "Термометр көрсеткіші", "Сөздер"], answer: 0 },
+        { q: "8. Сандық ақпаратқа не жатады?", options: ["Мектептегі бағалар", "Ертегі", "Әуен", "Фотосурет"], answer: 0 },
+        { q: "9. Сенсорлық (сезу) ақпаратты қалай қабылдаймыз?", options: ["Тері арқылы", "Дыбыс арқылы", "Көзбен", "Иіспен"], answer: 0 },
+        { q: "10. Ақпараттық процесс дегеніміз не?", options: ["Ақпаратты алу, сақтау, өңдеу және жеткізу", "Компьютерді қосу", "Ойын ойнау", "Мәтін терау"], answer: 0 }
+    ],
+    // 2-НҰСҚА: Компьютер құрылғылары және қауіпсіздік
+    [
+        { q: "1. Компьютердің «миы» деп қай құрылғыны атайды?", options: ["Процессор", "Монитор", "Тінтуір", "Пернетақта"], answer: 0 },
+        { q: "2. Ақпаратты экранға шығаратын құрылғы:", options: ["Монитор", "Пернетақта", "Принтер", "Сканер"], answer: 0 },
+        { q: "3. Мәтінді енгізуге арналған құрылғы:", options: ["Пернетақта", "Монитор", "Колонка", "Микрофон"], answer: 0 },
+        { q: "4. Қағаздағы суретті компьютерге енгізетін құрылғы:", options: ["Сканер", "Принтер", "Плоттер", "Микрофон"], answer: 0 },
+        { q: "5. Компьютердегі ақпаратты қағазға басып шығаратын құрылғы:", options: ["Принтер", "Сканер", "Монитор", "Колонка"], answer: 0 },
+        { q: "6. Ақпаратты ұзақ уақыт сақтайтын ішкі Жад құрылғысы:", options: ["Қатқыл диск (HDD/SSD)", "Жедел жад (RAM)", "Монитор", "Пернетақта"], answer: 0 },
+        { q: "7. Көзден мониторға дейінгі арақашықтық қанша болуы керек?", options: ["50-70 см", "10 см", "1-2 метр", "20 см"], answer: 0 },
+        { q: "8. Информатика кабинетінде не істеуге БОЛМАЙДЫ?", options: ["Тамақ пен сусын ішуге", "Түзу отыруға", "Мұғалімді тыңдауға", "Сабақ оқуға"], answer: 0 },
+        { q: "9. Тоқ сымдары мен розеткаларға тиісуге бола ма?", options: ["Болмайды, тоқ соғуы мүмкін", "Болады", "Тек мұғалім жоқта", "Болады, ештеңе етпейді"], answer: 0 },
+        { q: "10. Ақпаратты енгізу құрылғыларын тап:", options: ["Пернетақта, тінтуір, сканер", "Монитор, принтер, колонка", "Процессор, жад", "Қатқыл диск, флешка"], answer: 0 }
+    ],
+    // 3-НҰСҚА: Файлдар, бумалар және операциялық жүйе
+    [
+        { q: "1. Атауы бар белгілі бір ақпарат көлемі қалай аталады?", options: ["Файл", "Бума", "Терезе", "Белгіше"], answer: 0 },
+        { q: "2. Файлдарды топтастырып сақтауға арналған «қалта»:", options: ["Бума (Папка)", "Файл", "Белгіше", "Жұмыс үстелі"], answer: 0 },
+        { q: "3. Файл кеңейтімі не үшін қажет?", options: ["Файлдың типін анықтау үшін", "Көлемін үлкейту үшін", "Өшіру үшін", "Атын өзгерту үшін"], answer: 0 },
+        { q: "4. Мәтіндік файлдың кеңейтімін көрсет:", options: [".docx немесе .txt", ".jpg", ".mp3", ".exe"], answer: 0 },
+        { q: "5. Графикалық (сурет) файл кеңейтімі:", options: [".png немесе .jpg", ".mp3", ".txt", ".docx"], answer: 0 },
+        { q: "6. Компьютер қосылғанда экранда көрінетін негізгі бет:", options: ["Жұмыс үстелі", "Бас меню", "Корзина", "Себет"], answer: 0 },
+        { q: "7. Өшірілген файлдар уақытша қайда сақталады?", options: ["Себетте (Корзина)", "Процессорда", "Сканерде", "Желіде"], answer: 0 },
+        { q: "8. Файлды өшіру үшін қай пернені басамыз?", options: ["Delete", "Enter", "Shift", "Space"], answer: 0 },
+        { q: "9. Файлды көшіру (копировать) пернелері:", options: ["Ctrl + C", "Ctrl + V", "Ctrl + X", "Ctrl + Z"], answer: 0 },
+        { q: "10. Файлды қою (вставить) пернелері:", options: ["Ctrl + V", "Ctrl + C", "Ctrl + A", "Ctrl + S"], answer: 0 }
+    ],
+    // 4-НҰСҚА: Интернет және желілік қауіпсіздік
+    [
+        { q: "1. Бүкіләлемдік компьютерлік желі қалай аталады?", options: ["Интернет", "Локальді желі", "Бума", "Файл"], answer: 0 },
+        { q: "2. Веб-беттерді қарауға арналған бағдарлама:", options: ["Браузер", "Антивирус", "Мәтіндік редактор", "Графикалық редактор"], answer: 0 },
+        { q: "3. Браузерге мысал келтір:", options: ["Google Chrome, Яндекс", "MS Word", "Paint", "Scratch"], answer: 0 },
+        { q: "4. Ақпаратты іздеу жүйесін тап:", options: ["Google, Яндекс", "Paint, Calculator", "Word, Excel", "Scratch, Python"], answer: 0 },
+        { q: "5. Интернетте бейтаныс адамдарға не жіберуге БОЛМАЙДЫ?", options: ["Жеке деректер мен құпия сөздерді", "Мектеп тапсырмасын", "Жақсы тілектерді", "Суреттерді"], answer: 0 },
+        { q: "6. Сенімді құпия сөз (Пароль) қандай болуы керек?", options: ["Әріптер мен сандары бар күрделі", "Өз атың", "12345", "0000"], answer: 0 },
+        { q: "7. Компьютерді вирустардан қорғайтын бағдарлама:", options: ["Антивирус", "Браузер", "Драйвер", "Ойын"], answer: 0 },
+        { q: "8. Электрондық пошта не үшін арналған?", options: ["Хаттар мен файлдарды алмасу үшін", "Ойын ойнау үшін", "Сурет салу үшін", "Музыка тыңдау үшін"], answer: 0 },
+        { q: "9. Компьютерлік вирус деген не?", options: ["Зиянды бағдарлама", "Денсаулыққа зиян микроб", "Монитордың сынуы", "Пернетақтаның бұзылуы"], answer: 0 },
+        { q: "10. Интернеттегі сыпайылық ережесі қалай аталады?", options: ["Желілік этикет (Нетикет)", "Браузер", "Протокол", "Файл"], answer: 0 }
+    ],
+    // 5-НҰСҚА: Алгоритмдер және Scratch
+    [
+        { q: "1. Алгоритм дегеніміз не?", options: ["Әрекеттердің реттелген тізбегі", "Сурет салу бағдарламасы", "Компьютер бөлігі", "Ойын"], answer: 0 },
+        { q: "2. Алгоритмді орындаушыға кім жатады?", options: ["Адам, робот, компьютер", "Тек тас", "Тек кітап", "Орындық"], answer: 0 },
+        { q: "3. Алгоритмнің қандай түрлері бар?", options: ["Сызықтық, тармақталған, циклдік", "Мәтіндік, сандық", "Суретті, дыбысты", "Оңай, қиын"], answer: 0 },
+        { q: "4. Іс-әрекеттердің ретімен орындалуы қай алгоритм?", options: ["Сызықтық", "Тармақталған", "Циклдік", "Айналмалы"], answer: 0 },
+        { q: "5. Шартқа байланысты екіге бөлінетін алгоритм:", options: ["Тармақталған", "Сызықтық", "Циклдік", "Қайталанатын"], answer: 0 },
+        { q: "6. Әрекеттердің бірнеше рет қайталануы қай алгоритм?", options: ["Циклдік", "Сызықтық", "Тармақталған", "Соңғы"], answer: 0 },
+        { q: "7. Scratch бағдарламасындағы кейіпкер қалай аталады?", options: ["Спрайт", "Код", "Пиксель", "Файл"], answer: 0 },
+        { q: "8. Scratch-тегі стандартты мысық кейіпкері:", options: ["Спрайт1 (Sprite1)", "Робот", "Блок", "Фон"], answer: 0 },
+        { q: "9. Блок-схемада алгоритмнің басы мен соңы қай фигура?", options: ["Овал (эллипс)", "Тіктөртбұрыш", "Ромб", "Параллелограмм"], answer: 0 },
+        { q: "10. Блок-схемада іс-әрекет немесе команда қай фигурамен беріледі?", options: ["Тіктөртбұрыш", "Овал", "Ромб", "Шеңбер"], answer: 0 }
+    ]
+];
+
+let currentVariant = 0;
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+function selectVariant(index) {
+    currentVariant = index;
+    const btns = document.querySelectorAll('.variant-btn');
+    btns.forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+    });
+    restartQuiz();
+}
+
+function loadQuestion() {
+    answered = false;
+    const qData = quizData[currentVariant][currentQuestion];
+    
+    document.getElementById('questionText').innerText = qData.q;
+    document.getElementById('feedbackBox').style.display = 'none';
+    document.getElementById('nextBtn').style.display = 'none';
+    
+    const progressPercent = ((currentQuestion + 1) / 10) * 100;
+    document.getElementById('progressFill').style.width = progressPercent + '%';
+
+    const optionsList = document.getElementById('optionsList');
+    optionsList.innerHTML = '';
+
+    qData.options.forEach((opt, index) => {
+        const li = document.createElement('li');
+        li.className = 'option-item';
+        li.innerText = opt;
+        li.onclick = () => checkAnswer(index, li);
+        optionsList.appendChild(li);
+    });
+}
+
+function checkAnswer(selectedIndex, element) {
+    if (answered) return;
+    answered = true;
+
+    const qData = quizData[currentVariant][currentQuestion];
+    const options = document.querySelectorAll('.option-item');
+    const feedbackBox = document.getElementById('feedbackBox');
+
+    if (selectedIndex === qData.answer) {
+        score++;
+        element.classList.add('correct');
+        const happyEmojis = ['🎉 Өте жақсы!', '😃 Жарайсың!', '🌟 Керемет!', '👍 Дұрыс!'];
+        const randomEmoji = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
+        
+        feedbackBox.innerHTML = `${randomEmoji} Тамаша, жауабың дұрыс!`;
+        feedbackBox.style.backgroundColor = '#E8F8F0';
+        feedbackBox.style.color = '#1E8449';
+    } else {
+        element.classList.add('incorrect');
+        options[qData.answer].classList.add('correct');
+        
+        const sadEmojis = ['😢 Қап!', '😕 Өкінішке орай қате...', '❌ Мұқият бол!'];
+        const randomSad = sadEmojis[Math.floor(Math.random() * sadEmojis.length)];
+
+        feedbackBox.innerHTML = `${randomSad}<br><small>Дұрыс жауабы: <b>${qData.options[qData.answer]}</b></small>`;
+        feedbackBox.style.backgroundColor = '#FADBD8';
+        feedbackBox.style.color = '#922B21';
+    }
+
+    feedbackBox.style.display = 'block';
+    document.getElementById('nextBtn').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < 10) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById('quizBox').style.display = 'none';
+    document.getElementById('resultBox').style.display = 'block';
+
+    const percent = (score / 10) * 100;
+    document.getElementById('scoreText').innerText = `10-нан ${score} дұрыс жауап (${percent}%)`;
+
+    let emoji = '🏆';
+    let comment = '';
+
+    if (percent >= 90) {
+        emoji = '🏆🥳🌟';
+        comment = 'Өте үздік! Сен Информатика пәнін тамаша меңгеріпсің!';
+    } else if (percent >= 70) {
+        emoji = '👍😊👏';
+        comment = 'Жақсы нәтиже! Жарайсың, білімің жоғары!';
+    } else if (percent >= 50) {
+        emoji = '😐📚';
+        comment = 'Орташа нәтиже. Аздап қайталау керек!';
+    } else {
+        emoji = '😢💪';
+        comment = 'Мұңайма! Тақырыпты қайта оқып, тағы да байқап көр!';
+    }
+
+    document.getElementById('resultEmoji').innerText = emoji;
+    document.getElementById('resultComment').innerText = comment;
+}
+
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById('quizBox').style.display = 'block';
+    document.getElementById('resultBox').style.display = 'none';
+    loadQuestion();
+}
+
+// Тестті іске қосу
+loadQuestion();
+</script>
+</body>
+</html>
